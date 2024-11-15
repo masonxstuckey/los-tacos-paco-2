@@ -1,243 +1,121 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Los Tacos Paco 2</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4e4c1;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
+// Email Signup Popup
+window.onload = function () {
+    document.getElementById("emailPopup").style.display = "flex";
+};
 
-        header {
-            background-color: #d32f2f;
-            color: #ffffff;
-            text-align: center;
-            padding: 1em;
-        }
+function closePopup() {
+    document.getElementById("emailPopup").style.display = "none";
+}
 
-        nav a {
-            color: #ffd54f;
-            margin: 0 1em;
-            text-decoration: none;
-            font-weight: bold;
-        }
+function subscribe() {
+    const email = document.getElementById("emailInput").value;
+    if (email) {
+        alert("Thank you for subscribing! Enjoy your free drink with your next meal.");
+        closePopup();
+    } else {
+        alert("Please enter a valid email.");
+    }
+}
 
-        .highlight {
-            background-color: #ffb74d;
-            padding: 1em;
-            text-align: center;
-            margin: 1em 0;
-        }
+// Chip Game Logic with Try Again Feature
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 
-        section {
-            padding: 2em;
-            text-align: center;
-        }
+let chips = [];
+let score = 0;
+let gameOver = false;
+const bowl = { x: 160, width: 80, height: 20, color: "#d32f2f" };
 
-        footer {
-            background-color: #d32f2f;
-            color: #ffffff;
-            text-align: center;
-            padding: 1em;
-        }
+class Chip {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = 20;
+        this.color = "#FFD700";
+    }
 
-        #gameCanvas {
-            background-color: #fff3e0;
-            border: 2px solid #d32f2f;
-        }
+    draw() {
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(this.x + this.size / 2, this.y + this.size);
+        ctx.lineTo(this.x - this.size / 2, this.y + this.size);
+        ctx.closePath();
+        ctx.fill();
+    }
 
-        .popup {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
+    fall() {
+        this.y += 3;
+    }
+}
 
-        .popup-content {
-            background-color: #ffffff;
-            padding: 2em;
-            text-align: center;
-            border-radius: 5px;
-            max-width: 400px;
-        }
-    </style>
-</head>
-<body>
+function drawBowl() {
+    ctx.fillStyle = bowl.color;
+    ctx.fillRect(bowl.x, canvas.height - bowl.height, bowl.width, bowl.height);
+}
 
-    <!-- Email Signup Popup -->
-    <div id="emailPopup" class="popup">
-        <div class="popup-content">
-            <h2>Join the Los Tacos Paco 2 Family!</h2>
-            <p>Sign up for our email list and enjoy exclusive deals, events, and a free drink with your meal!</p>
-            <input type="email" id="emailInput" placeholder="Enter your email">
-            <button onclick="subscribe()">Sign Up</button>
-            <button onclick="closePopup()">Close</button>
-        </div>
-    </div>
+function generateChip() {
+    if (!gameOver) {
+        const x = Math.random() * (canvas.width - 20) + 10;
+        chips.push(new Chip(x, 0));
+    }
+}
 
-    <!-- Header -->
-    <header>
-        <h1>Los Tacos Paco 2</h1>
-        <nav>
-            <a href="#menu">Menu</a>
-            <a href="#order">Order Online</a>
-            <a href="#tacoClub">Taco Tuesday Club</a>
-            <a href="#saucePromo">Grandma’s Sauce</a>
-        </nav>
-    </header>
+function updateGame() {
+    if (gameOver) return;
 
-    <!-- Sauce Promotion -->
-    <section id="saucePromo" class="highlight">
-        <h2>Our Famous Grandma Sauce!</h2>
-        <p>Take home a bottle of our beloved Grandma Sauce! Perfect with tacos, salads, and everything in between. Available for purchase in-store and online.</p>
-    </section>
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    <!-- Taco Tuesday Club -->
-    <section id="tacoClub" class="highlight">
-        <h2>Join the Taco Tuesday Club!</h2>
-        <p>Be a part of the family! Get your custom taco tray and enjoy 20% off every Tuesday with exclusive club perks.</p>
-    </section>
+    drawBowl();
 
-    <!-- Menu Section -->
-    <section id="menu">
-        <h2>Our Menu</h2>
-        <p><a href="menu.html">Click here to view our full menu.</a></p>
-    </section>
+    chips.forEach((chip, index) => {
+        chip.fall();
+        chip.draw();
 
-    <!-- Order Online Section -->
-    <section id="order">
-        <h2>Order Online</h2>
-        <p><a href="order.html">Order for pickup or delivery through our partners!</a></p>
-    </section>
+        // Check if chip is caught by the bowl
+        if (
+            chip.y + chip.size > canvas.height - bowl.height &&
+            chip.x > bowl.x &&
+            chip.x < bowl.x + bowl.width
+        ) {
+            score++;
+            chips.splice(index, 1); // Remove caught chip
+            document.getElementById("gameMessage").innerText = `Score: ${score}`;
 
-    <!-- Queso Game Section -->
-    <section id="quesoGame">
-        <h2>Play & Win Free Queso!</h2>
-        <p>Collect all the chips in the game below to win free queso with your chips and salsa!</p>
-        <div id="gameContainer">
-            <canvas id="gameCanvas" width="400" height="600"></canvas>
-            <button onclick="startGame()">Start Game</button>
-        </div>
-        <p id="gameMessage"></p>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <p>Los Tacos Paco 2 &copy; 2023. All Rights Reserved.</p>
-    </footer>
-
-    <script>
-        // Email Signup Popup
-        window.onload = function () {
-            document.getElementById("emailPopup").style.display = "flex";
-        };
-
-        function closePopup() {
-            document.getElementById("emailPopup").style.display = "none";
-        }
-
-        function subscribe() {
-            const email = document.getElementById("emailInput").value;
-            if (email) {
-                alert("Thank you for subscribing! Enjoy your free drink with your next meal.");
-                closePopup();
-            } else {
-                alert("Please enter a valid email.");
+            // Win condition
+            if (score >= 10) {
+                alert("Congratulations! You've won free queso!");
+                resetGame();
             }
         }
 
-        // Chip Game Logic
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
-
-        let chips = [];
-        let score = 0;
-        const bowl = { x: 160, width: 80, height: 20, color: "#d32f2f" };
-
-        class Chip {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.size = 20;
-                this.color = "#FFD700";
-            }
-
-            draw() {
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.moveTo(this.x, this.y);
-                ctx.lineTo(this.x + this.size / 2, this.y + this.size);
-                ctx.lineTo(this.x - this.size / 2, this.y + this.size);
-                ctx.closePath();
-                ctx.fill();
-            }
-
-            fall() {
-                this.y += 3;
-            }
+        // End game if chip falls past the bowl
+        if (chip.y > canvas.height) {
+            gameOver = true;
+            document.getElementById("gameMessage").innerText = "Try Again!";
+            setTimeout(resetGame, 2000); // Restart after 2 seconds
         }
+    });
+}
 
-        function drawBowl() {
-            ctx.fillStyle = bowl.color;
-            ctx.fillRect(bowl.x, canvas.height - bowl.height, bowl.width, bowl.height);
-        }
+function resetGame() {
+    chips = [];
+    score = 0;
+    gameOver = false;
+    document.getElementById("gameMessage").innerText = "Score: 0";
+}
 
-        function generateChip() {
-            const x = Math.random() * (canvas.width - 20) + 10;
-            chips.push(new Chip(x, 0));
-        }
+function startGame() {
+    resetGame();
+    setInterval(updateGame, 30);
+    setInterval(generateChip, 1000);
+}
 
-        function updateGame() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+// Mouse control for bowl
+canvas.addEventListener("mousemove", (e) => {
+    bowl.x = e.offsetX - bowl.width / 2;
 
-            drawBowl();
-
-            chips.forEach((chip, index) => {
-                chip.fall();
-                chip.draw();
-
-                if (
-                    chip.y + chip.size > canvas.height - bowl.height &&
-                    chip.x > bowl.x &&
-                    chip.x < bowl.x + bowl.width
-                ) {
-                    score++;
-                    chips.splice(index, 1);
-                    if (score >= 10) {
-                        alert("Congratulations! You've won free queso!");
-                        resetGame();
-                    }
-                }
-
-                if (chip.y > canvas.height) {
-                    chips.splice(index, 1);
-                }
-            });
-        }
-
-        function resetGame() {
-            chips = [];
-            score = 0;
-        }
-
-        function startGame() {
-            setInterval(updateGame, 30);
-            setInterval(generateChip, 1000);
-        }
-
-        canvas.addEventListener("mousemove", (e) => {
-            bowl.x = e.offsetX - bowl.width / 2;
-        });
-    </script>
-</body>
-</html>
+    // Keep the bowl within canvas boundaries
+    if (bowl.x < 0) bowl.x = 0;
+    if (bowl.x + bowl.width > canvas.width) bowl.x = canvas.width - bowl.width;
+});

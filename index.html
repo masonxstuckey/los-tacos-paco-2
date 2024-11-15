@@ -4,7 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Los Tacos Paco 2</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4e4c1;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        header {
+            background-color: #d32f2f;
+            color: #ffffff;
+            text-align: center;
+            padding: 1em;
+        }
+
+        nav a {
+            color: #ffd54f;
+            margin: 0 1em;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .highlight {
+            background-color: #ffb74d;
+            padding: 1em;
+            text-align: center;
+            margin: 1em 0;
+        }
+
+        section {
+            padding: 2em;
+            text-align: center;
+        }
+
+        footer {
+            background-color: #d32f2f;
+            color: #ffffff;
+            text-align: center;
+            padding: 1em;
+        }
+
+        #gameCanvas {
+            background-color: #fff3e0;
+            border: 2px solid #d32f2f;
+        }
+
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-content {
+            background-color: #ffffff;
+            padding: 2em;
+            text-align: center;
+            border-radius: 5px;
+            max-width: 400px;
+        }
+    </style>
 </head>
 <body>
 
@@ -59,7 +125,7 @@
         <h2>Play & Win Free Queso!</h2>
         <p>Collect all the chips in the game below to win free queso with your chips and salsa!</p>
         <div id="gameContainer">
-            <canvas id="gameCanvas"></canvas>
+            <canvas id="gameCanvas" width="400" height="600"></canvas>
             <button onclick="startGame()">Start Game</button>
         </div>
         <p id="gameMessage"></p>
@@ -70,7 +136,108 @@
         <p>Los Tacos Paco 2 &copy; 2023. All Rights Reserved.</p>
     </footer>
 
-    <!-- JavaScript -->
-    <script src="script.js"></script>
+    <script>
+        // Email Signup Popup
+        window.onload = function () {
+            document.getElementById("emailPopup").style.display = "flex";
+        };
+
+        function closePopup() {
+            document.getElementById("emailPopup").style.display = "none";
+        }
+
+        function subscribe() {
+            const email = document.getElementById("emailInput").value;
+            if (email) {
+                alert("Thank you for subscribing! Enjoy your free drink with your next meal.");
+                closePopup();
+            } else {
+                alert("Please enter a valid email.");
+            }
+        }
+
+        // Chip Game Logic
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        let chips = [];
+        let score = 0;
+        const bowl = { x: 160, width: 80, height: 20, color: "#d32f2f" };
+
+        class Chip {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = 20;
+                this.color = "#FFD700";
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                ctx.lineTo(this.x + this.size / 2, this.y + this.size);
+                ctx.lineTo(this.x - this.size / 2, this.y + this.size);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            fall() {
+                this.y += 3;
+            }
+        }
+
+        function drawBowl() {
+            ctx.fillStyle = bowl.color;
+            ctx.fillRect(bowl.x, canvas.height - bowl.height, bowl.width, bowl.height);
+        }
+
+        function generateChip() {
+            const x = Math.random() * (canvas.width - 20) + 10;
+            chips.push(new Chip(x, 0));
+        }
+
+        function updateGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawBowl();
+
+            chips.forEach((chip, index) => {
+                chip.fall();
+                chip.draw();
+
+                if (
+                    chip.y + chip.size > canvas.height - bowl.height &&
+                    chip.x > bowl.x &&
+                    chip.x < bowl.x + bowl.width
+                ) {
+                    score++;
+                    chips.splice(index, 1);
+                    if (score >= 10) {
+                        alert("Congratulations! You've won free queso!");
+                        resetGame();
+                    }
+                }
+
+                if (chip.y > canvas.height) {
+                    chips.splice(index, 1);
+                }
+            });
+        }
+
+        function resetGame() {
+            chips = [];
+            score = 0;
+        }
+
+        function startGame() {
+            setInterval(updateGame, 30);
+            setInterval(generateChip, 1000);
+        }
+
+        canvas.addEventListener("mousemove", (e) => {
+            bowl.x = e.offsetX - bowl.width / 2;
+        });
+    </script>
 </body>
 </html>

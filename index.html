@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Los Tacos Paco 2</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Email Signup Popup -->
+    <div id="emailPopup" class="popup">
+        <div class="popup-content">
+            <h2>Join the Los Tacos Paco 2 Family!</h2>
+            <p>Sign up for our email list and enjoy exclusive deals, events, and a free drink with your meal!</p>
+            <input type="email" id="emailInput" placeholder="Enter your email">
+            <button onclick="subscribe()">Sign Up</button>
+            <button onclick="closePopup()">Close</button>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <h1>Los Tacos Paco 2</h1>
+        <nav>
+            <a href="#menu">Menu</a>
+            <a href="#order">Order Online</a>
+            <a href="#tacoClub">Taco Tuesday Club</a>
+            <a href="#saucePromo">Grandma’s Sauce</a>
+        </nav>
+    </header>
+
+    <!-- Sauce Promotion -->
+    <section id="saucePromo" class="highlight">
+        <h2>Our Famous Grandma Sauce!</h2>
+        <p>Take home a bottle of our beloved Grandma Sauce! Perfect with tacos, salads, and everything in between. Available for purchase in-store and online.</p>
+    </section>
+
+    <!-- Taco Tuesday Club -->
+    <section id="tacoClub" class="highlight">
+        <h2>Join the Taco Tuesday Club!</h2>
+        <p>Be a part of the family! Get your custom taco tray and enjoy 20% off every Tuesday with exclusive club perks.</p>
+    </section>
+
+    <!-- Menu Section -->
+    <section id="menu">
+        <h2>Our Menu</h2>
+        <p><a href="menu.html">Click here to view our full menu.</a></p>
+    </section>
+
+    <!-- Order Online Section -->
+    <section id="order">
+        <h2>Order Online</h2>
+        <p><a href="order.html">Order for pickup or delivery through our partners!</a></p>
+    </section>
+
+    <!-- Queso Game Section -->
+    <section id="quesoGame">
+        <h2>Play & Win Free Queso!</h2>
+        <p>Collect all the chips in the game below to win free queso with your chips and salsa!</p>
+        <div id="gameContainer">
+            <canvas id="gameCanvas"></canvas>
+            <button onclick="startGame()">Start Game</button>
+        </div>
+        <p id="gameMessage"></p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>Los Tacos Paco 2 &copy; 2023. All Rights Reserved.</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
